@@ -1,24 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import {BrowserRouter ,Routes, Route} from "react-router-dom";
+import NoteCardList from "./components/note_card_list.js";
+import AddNote from "./components/Add_note.js";
+import EditNote from "./components/edit_note.js";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<NoteCardList />} />
+          <Route path="/add_note" element={<AddNote />} />
+          <Route path="/edit_note/:id" element={<EditNote />} />
+        </Routes>
+      </BrowserRouter>
   );
 }
 
