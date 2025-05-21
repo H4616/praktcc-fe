@@ -1,17 +1,46 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 import { BASE_URL } from "../utils.js";
 
 const NoteCardList = ({ id }) => {
 	const [users, setUsers] = useState([]);
+	const [token, setToken] = useState("");
+	const [expired, setExpired] = useState("");
 
 	useEffect(() => {
 		getUsers();
+		refreshToken(); //token jwt refresh
 	}, []);
 
+	//refresh token tanpa reload
+	const axiosJwt = axios.create();
+	axiosJwt.interceptors.request.use(
+		async (config) => {
+			const currentDate = new Date();
+			if (expired * 1000 < currentDate.getTime()) {
+				const response = await axios.get(`${BASE_URL}/token`, {
+					withCredentials: true,
+				});
+				config.headers["Authorization"] = `Bearer ${response.data.accesstoken}`;
+				setToken(response.data.accesstoken);
+				const decode = jwtDecode(response.data.accesstoken);
+				setExpired(decode.exp);
+			}
+			return config;
+		},
+		(error) => {
+			return Promise.reject(error);
+		}
+	);
+
 	const getUsers = async () => {
-		const response = await axios.get(`${BASE_URL}/users`);
+		const response = await axiosJwt.get(`${BASE_URL}/users`, {
+			headers: {
+				Authorization: `Bearer ${token}`, //menambahkan token ke header
+			},
+		});
 		setUsers(response.data);
 	};
 	const navigate = useNavigate();
@@ -38,6 +67,32 @@ const NoteCardList = ({ id }) => {
 			window.location.reload(); // Refresh halaman setelah menghapus
 		} catch (error) {
 			console.error("Error deleting note:", error);
+		}
+	};
+
+	// Fungsi untuk mendapatkan token
+	const refreshToken = async () => {
+		try {
+			const response = await axios.get(`${BASE_URL}/token`, {
+				withCredentials: true,
+			});
+			setToken(response.data.accesstoken);
+			const decode = jwtDecode(response.data.accesstoken);
+			console.log(decode);
+		} catch (error) {
+			if (error.response) {
+				navigate("/login");
+			}
+		}
+	};
+
+	// Fungsi untuk logout
+	const handleLogout = async () => {
+		try {
+			await axios.delete(`${BASE_URL}/logout`);
+			navigate("/login");
+		} catch (error) {
+			console.error("Error logging out:", error);
 		}
 	};
 
@@ -101,8 +156,17 @@ const NoteCardList = ({ id }) => {
 					</div>
 				))}
 
-			<div>
-				<button className="button is-primary" onClick={() => navigate('/add_note')}>Add Note</button>
+			<div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
+				<button
+					className="button is-primary"
+					onClick={() => navigate("/add_note")}
+				>
+					Add Note
+				</button>
+
+				<button className="button is-danger" onClick={handleLogout}>
+					Logout
+				</button>
 			</div>
 		</>
 	);
