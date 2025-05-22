@@ -60,7 +60,6 @@ const Login = () => {
                                 </div>
                                 <div className="field mt-5">
                                     <button className="button is-success is-fullwidth" type="submit" onClick={() => navigate("/card_list")}>
-                                        
                                         Login
                                     </button>
                                 </div>

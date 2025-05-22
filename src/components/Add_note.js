@@ -100,8 +100,7 @@ const AddNote = () => {
                 </div>
 
                 <div className="control">
-                    <button className="button is-primary" type="submit">
-                        onClick={() => navigate("/card_list")}
+                    <button className="button is-primary" type="submit" onClick={() => navigate("/card_list")}>                    
                         Submit
                     </button>
                 </div>
