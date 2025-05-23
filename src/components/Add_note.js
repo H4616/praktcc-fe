@@ -40,24 +40,28 @@ const AddNote = () => {
 	//refresh token tanpa reload
 	const axiosJwt = axios.create();
 	axiosJwt.interceptors.request.use(
-		async (config) => {
-			const currentDate = new Date();
-			if (expired * 1000 < currentDate.getTime()) {
-				const response = await axios.get(`${BASE_URL}/token`, {
-					withCredentials: true,
-				});
-				config.headers["Authorization"] = `Bearer ${response.data.accesstoken}`;
-				setToken(response.data.accesstoken);
-				const decode = jwtDecode(response.data.accesstoken);
-				setExpired(decode.exp);
-			}
-			return config;
-		},
-		(error) => {
-			return Promise.reject(error);
-		}
-	);
-
+ 	async (config) => {
+		
+ 		const currentDate = new Date();
+ 		if (!expired || expired * 1000 < currentDate.getTime() || !token) {
+ 			const response = await axios.get(`${BASE_URL}/token`, {
+ 				withCredentials: true,
+ 			});
+ 			if (response.data.accesstoken) {
+ 				config.headers["Authorization"] = `Bearer ${response.data.accesstoken}`;
+ 				setToken(response.data.accesstoken);
+ 				const decode = jwtDecode(response.data.accesstoken);
+ 				setExpired(decode.exp);
+ 			}
+ 		} else {
+ 			config.headers["Authorization"] = `Bearer ${token}`;
+ 		}
+ 		return config;
+ 	},
+ 	(error) => {
+ 		return Promise.reject(error);
+ 	}
+ );
 
 	// Fungsi untuk mendapatkan token
 	const refreshToken = async () => {

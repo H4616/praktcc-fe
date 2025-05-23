@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../utils.js";
+import { jwtDecode } from "jwt-decode";
 
 const EditNote = () => {
     const [username, setUsername] = useState("");
@@ -9,14 +10,17 @@ const EditNote = () => {
     const [email, setEmail] = useState("");
     const [note, setNote] = useState("");
     const [deadline, setDeadline] = useState("");
-    const navigate = useNavigate();
     const { id } = useParams(); // Ambil ID dari URL
+	const [token, setToken] = useState("");
+	const [expired, setExpired] = useState("");
+    const navigate = useNavigate();
 
     // Ambil data lama untuk di-edit
     useEffect(() => {
+        refreshToken();
         const fetchNote = async () => {
             try {
-                const response = await axios.get(`${BASE_URL}/users/${id}`);
+                const response = await axios.get(`${BASE_URL}/users/${id}`,{credentials:true});
                 setUsername(response.data.username);
                 setStatus(response.data.status);
                 setEmail(response.data.email);
@@ -46,6 +50,49 @@ const EditNote = () => {
         }
     };
 
+
+	// Fungsi untuk mendapatkan token
+	const refreshToken = async () => {
+		try {
+			const response = await axios.get(`${BASE_URL}/token`, {
+				withCredentials: true,
+			});
+			setToken(response.data.accesstoken);
+			const decode = jwtDecode(response.data.accesstoken);
+			console.log(decode);
+		} catch (error) {
+			if (error.response) {
+				navigate("/login");
+			}
+		}
+	};
+
+    
+	//refresh token tanpa reload
+	const axiosJwt = axios.create();
+	axiosJwt.interceptors.request.use(
+ 	async (config) => {
+		
+ 		const currentDate = new Date();
+ 		if (!expired || expired * 1000 < currentDate.getTime() || !token) {
+ 			const response = await axios.get(`${BASE_URL}/token`, {
+ 				withCredentials: true,
+ 			});
+ 			if (response.data.accesstoken) {
+ 				config.headers["Authorization"] = `Bearer ${response.data.accesstoken}`;
+ 				setToken(response.data.accesstoken);
+ 				const decode = jwtDecode(response.data.accesstoken);
+ 				setExpired(decode.exp);
+ 			}
+ 		} else {
+ 			config.headers["Authorization"] = `Bearer ${token}`;
+ 		}
+ 		return config;
+ 	},
+ 	(error) => {
+ 		return Promise.reject(error);
+ 	}
+ );
     return (
         <>
             <form onSubmit={editNote} className="box p-5">
