@@ -166,7 +166,7 @@ const getUsers = async () => {
 			<div className="is-flex is-justify-content-space-between is-align-items-center mb-4">
 				<button
 					className="button is-primary"
-					onClick={() => navigate("/add_note")}
+					onClick={() => navigate("/add_note")} // Navigasi ke halaman tambah catatan
 				>
 					Add Note
 				</button>

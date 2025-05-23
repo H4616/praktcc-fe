@@ -3,28 +3,32 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../utils.js";
 
-
 const Login = () => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [msg, setMsg] = useState(""); // Pesan error
+    const navigate = useNavigate();
 
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [msg, setMsg] = useState("");
-	const navigate = useNavigate();
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            // Kirim permintaan POST untuk login
+            const response = await axios.post(`${BASE_URL}/login`, {
+                email: email,
+                password: password,
+            });
 
-	const Login = async (e) => {
-		e.preventDefault();
-		try {
-			await axios.post(`${BASE_URL}/login`, {
-				email: email,
-				password: password,
-			});
-			navigate("/card_list");
-		} catch (error) {
-			if (error.response) {
-				setMsg(error.response.data.msg);
-			}
-		}
-	};
+            // Jika login berhasil, arahkan ke halaman card_list
+            navigate("/card_list");
+        } catch (error) {
+            // Tangani error dan tampilkan pesan
+            if (error.response) {
+                setMsg(error.response.data.msg); // Menampilkan pesan error
+            } else {
+                setMsg("Terjadi kesalahan, coba lagi nanti."); // Pesan error umum
+            }
+        }
+    };
 
     return (
         <section className="hero has-background-grey-light is-fullheight is-fullwidth">
@@ -32,8 +36,10 @@ const Login = () => {
                 <div className="container">
                     <div className="columns is-centered">
                         <div className="column is-4-desktop">
-                            <form onSubmit={Login} className="box">
-                                <p className="has-text-centered">{msg}</p>
+                            <form onSubmit={handleLogin} className="box">
+                                {/* Menampilkan pesan error jika ada */}
+                                {msg && <p className="has-text-centered mt-5" style={{ color: 'red' }}>{msg}</p>}
+
                                 <div className="field mt-5">
                                     <label className="label">Email</label>
                                     <div className="control">
@@ -46,6 +52,7 @@ const Login = () => {
                                         />
                                     </div>
                                 </div>
+
                                 <div className="field mt-5">
                                     <label className="label">Password</label>
                                     <div className="control">
@@ -58,11 +65,13 @@ const Login = () => {
                                         />
                                     </div>
                                 </div>
+
                                 <div className="field mt-5">
-                                    <button className="button is-success is-fullwidth" type="submit" onClick={() => navigate("/card_list")}>
+                                    <button className="button is-success is-fullwidth" type="submit">
                                         Login
                                     </button>
                                 </div>
+
                                 <div>
                                     <p className="has-text-centered mt-5">
                                         Don't have an account? <a href="/register">Register</a>

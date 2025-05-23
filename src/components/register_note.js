@@ -86,7 +86,7 @@ const Register = () => {
 								</div>
 								<div className="field mt-5">
 									<div className="control">
-										<button className="button is-success is-fullwidth" onClick={() => navigate("/login")}>
+										<button className="button is-success is-fullwidth" type="submit">
 											Register
 										</button>
 									</div>

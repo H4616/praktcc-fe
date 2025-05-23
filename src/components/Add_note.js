@@ -151,7 +151,6 @@ const AddNote = () => {
 					<button
 						className="button is-primary"
 						type="submit"
-						onClick={() => navigate("/card_list")}
 					>
 						Submit
 					</button>
