@@ -40,7 +40,7 @@ const EditNote = () => {
                 note,
                 deadline,
             });
-            navigate("/");
+            navigate("/card_list");
         } catch (error) {
             console.error("Error updating note:", error);
         }
