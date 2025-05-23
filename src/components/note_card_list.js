@@ -8,6 +8,7 @@ const NoteCardList = ({ id }) => {
 	const [users, setUsers] = useState([]);
 	const [token, setToken] = useState("");
 	const [expired, setExpired] = useState("");
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		getUsers();
@@ -41,15 +42,15 @@ const NoteCardList = ({ id }) => {
  );
 
 
-	const getUsers = async () => {
-		const response = await axiosJwt.get(`${BASE_URL}/users`, {
-			headers: {
-				Authorization: `Bearer ${token}`, //menambahkan token ke header
-			},
-		});
-		setUsers(response.data);
-	};
-	const navigate = useNavigate();
+const getUsers = async () => {
+    const response = await axiosJwt.get(`${BASE_URL}/users`, {
+        headers: {
+            Authorization: `Bearer ${token}`, // Menambahkan token ke header
+        },
+        withCredentials: true // Pastikan ini ada agar cookie dikirimkan bersama permintaan
+    });
+    setUsers(response.data);
+};
 
 	// Fungsi untuk navigasi ke halaman edit
 	const handleEdit = (id) => {
