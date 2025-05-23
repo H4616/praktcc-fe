@@ -18,14 +18,14 @@ const AddNote = () => {
 	const addNote = async (e) => {
 		e.preventDefault();
 		try {
-			await axiosJwt.post(`${BASE_URL}/users`, {
+			await axiosJwt.post(`${BASE_URL}/users`,{withCredentials:true}, {
 				username,
 				status,
 				email,
 				note,
 				deadline,
 			});
-			navigate("/");
+			navigate("/card_list");
 		} catch (error) {
 			console.error(error);
 		}
