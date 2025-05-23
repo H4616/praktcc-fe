@@ -14,11 +14,12 @@ const Register = () => {
 	const Register = async (e) => {
 		e.preventDefault();
 		try {
+			console.log(password, confirmPassword);
 			await axios.post(`${BASE_URL}/register`, {
 				name: username,
 				email: email,
 				password: password,
-				confirmPassword: confirmPassword,
+				confirmPassword: confirmPassword
 			});
 			navigate("/login");
 		} catch (error) {
