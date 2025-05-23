@@ -18,8 +18,9 @@ const NoteCardList = ({ id }) => {
 	const axiosJwt = axios.create();
 	axiosJwt.interceptors.request.use(
  	async (config) => {
+		
  		const currentDate = new Date();
- 		if (expired * 1000 < currentDate.getTime() || !token) {
+ 		if (!expired || expired * 1000 < currentDate.getTime() || !token) {
  			const response = await axios.get(`${BASE_URL}/token`, {
  				withCredentials: true,
  			});
